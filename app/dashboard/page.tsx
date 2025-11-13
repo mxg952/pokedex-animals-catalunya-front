@@ -7,9 +7,11 @@ import { apiClient } from "@/lib/api-client"
 import UserSidebar from "@/components/dashboard/user-sidebar"
 import SearchFilters from "@/components/dashboard/search-filters"
 import AnimalList from "@/components/dashboard/animal-list"
-import AnimalDetailViewer from "@/components/animal-detail-viewer"
+import AnimalDetailViewer from "@/components/AnimalDetailViewerGrid"
 import UnlockAnimalModal from "@/components/unlock-animal-modal"
 import type { Animal, UserAnimalStats } from "@/lib/types"
+import AnimalDetailViewerGrid from "@/components/AnimalDetailViewerGrid"  
+
 
 export default function DashboardPage() {
   const { user, isLoading: authLoading } = useAuth()
@@ -215,20 +217,28 @@ export default function DashboardPage() {
   const displayPercentage = displayStats ? (displayStats.totalUnlockedAnimals / displayStats.totalAnimals) * 100 : 0
 
   return (
-    <div className="min-h-[calc(100vh-4rem)]">
-      <div className="flex h-full">
-        <UserSidebar
-          user={user}
-          stats={displayStats}
-          displayPercentage={displayPercentage}
-          categoryFilter={categoryFilter}
-        />
+  <div className="min-h-[calc(100vh-4rem)]">
+    <div className="flex h-screen">
+      
+      {/* ✅ USER SIDEBAR - OCUPA TOTA L'ALTURA */}
+      <div className="w-1/4 border-r border-border bg-gradient-to-b from-muted/10 to-background">
+        <div className="h-full overflow-y-auto"> {/* ✅ Scroll intern */}
+          <UserSidebar
+            user={user}
+            stats={displayStats}
+            displayPercentage={displayPercentage}
+            categoryFilter={categoryFilter}
+          />
+        </div>
+      </div>
 
-        <div className="flex-1 overflow-auto border-r border-border">
-          <div className="p-6">
+      {/* ✅ FITXES D'ANIMALS - OCUPA TOTA L'ALTURA */}
+      <div className="w-1/4 border-r border-border">
+        <div className="h-full flex flex-col bg-gradient-to-b from-background to-muted/5">
+          <div className="p-4 flex-shrink-0 border-b border-border"> {/* ✅ Header fix */}
             <div className="mb-4">
-              <h1 className="mb-1 font-serif text-3xl font-bold text-foreground">Catàleg d'animals</h1>
-              <p className="text-sm text-muted-foreground">Selecciona un animal per veure els detalls</p>
+              <h1 className="mb-1 font-serif text-xl font-bold text-foreground">Catàleg d'animals</h1>
+              <p className="text-xs text-muted-foreground">Selecciona un animal per veure els detalls</p>
             </div>
 
             <SearchFilters
@@ -240,35 +250,43 @@ export default function DashboardPage() {
               onStatusChange={setStatusFilter}
               categories={categories}
             />
-
-            <AnimalList animals={filteredAnimals} selectedAnimal={selectedAnimal} onSelectAnimal={setSelectedAnimal} />
+          </div>
+          
+          {/* ✅ Llista ocupa tot l'espai restant */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="p-4">
+              <AnimalList animals={filteredAnimals} selectedAnimal={selectedAnimal} onSelectAnimal={setSelectedAnimal} />
+            </div>
           </div>
         </div>
-
-        <div className="w-96 overflow-auto bg-gradient-to-b from-muted/20 to-background p-6">
-          <AnimalDetailViewer
-            animal={selectedAnimal}
-            userAnimals={userAnimals}
-            onUnlock={() => {
-              if (selectedAnimal) {
-                setAnimalToUnlock(selectedAnimal)
-                setShowUnlockModal(true)
-              }
-            }}
-            onRefresh={fetchData}
-          />
-        </div>
       </div>
-      {showUnlockModal && animalToUnlock && (
-        <UnlockAnimalModal
-          animal={animalToUnlock}
-          onClose={() => {
-            setShowUnlockModal(false)
-            setAnimalToUnlock(null)
+
+      {/* ✅ VISUALITZADOR - OCUPA TOTA L'ALTURA */}
+      <div className="w-2/4 h-screen overflow-y-auto bg-gradient-to-b from-muted/20 to-background p-6">
+        <AnimalDetailViewer
+          animal={selectedAnimal}
+          userAnimals={userAnimals}
+          onUnlock={() => {
+            if (selectedAnimal) {
+              setAnimalToUnlock(selectedAnimal)
+              setShowUnlockModal(true)
+            }
           }}
-          onSubmit={handleUnlockAnimal}
+          onRefresh={fetchData}
         />
-      )}
+      </div>
     </div>
-  )
+    
+    {showUnlockModal && animalToUnlock && (
+      <UnlockAnimalModal
+        animal={animalToUnlock}
+        onClose={() => {
+          setShowUnlockModal(false)
+          setAnimalToUnlock(null)
+        }}
+        onSubmit={handleUnlockAnimal}
+      />
+    )}
+  </div>
+)
 }

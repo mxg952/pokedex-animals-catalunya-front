@@ -12,7 +12,7 @@ interface UserSidebarProps {
 
 export default function UserSidebar({ user, stats, displayPercentage, categoryFilter }: UserSidebarProps) {
   return (
-    <div className="w-80 border-r border-border bg-gradient-to-b from-primary/5 to-secondary/5 p-6">
+    <div className="h-full w-full bg-gradient-to-b from-primary/5 to-secondary/5 p-6"> {/* ✅ ELIMINAT w-80, AFEGIT h-full w-full */}
       <div className="mb-6 rounded-xl border-2 border-primary/20 bg-background/80 p-6 text-center shadow-lg pokedex-card">
         <CharacterAvatar character={user.character || "explorer"} size="lg" username={user.username} />
         <p className="mt-4 text-sm font-medium text-primary">Descobreix la fauna catalana!</p>

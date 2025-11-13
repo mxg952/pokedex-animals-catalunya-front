@@ -33,14 +33,7 @@ export function Header() {
               >
                 Inici
               </Link>
-              <Link
-                href="/animals"
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  pathname === "/animals" ? "text-primary" : "text-muted-foreground"
-                }`}
-              >
-                Animals
-              </Link>
+              
               {user.role === "ADMIN_ROLE" && (
                 <Link
                   href="/admin"
@@ -48,7 +41,7 @@ export function Header() {
                     pathname === "/admin" ? "text-primary" : "text-muted-foreground"
                   }`}
                 >
-                  Administració
+                  Administrador
                 </Link>
               )}
               <Button onClick={logout} variant="ghost" size="sm">

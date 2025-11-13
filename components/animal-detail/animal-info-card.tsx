@@ -50,6 +50,39 @@ export default function AnimalInfoCard({ animal, isLocked, onUnlock }: AnimalInf
         )}
       </div>
 
+       {isLocked && (
+        <div className="rounded-lg border-2 border-primary/30 bg-primary/10 p-4 shadow-md">
+          <p className="mb-3 text-sm text-foreground">
+            Desbloqueja aquest animal per veure tota la informació i contribuir amb les teves fotos
+          </p>
+          <Button onClick={onUnlock} className="w-full font-bold shadow-md">
+            <Lock className="mr-2 h-4 w-4" />
+            Desbloqueja ara
+          </Button>
+        </div>
+      )}
+
+      {animal.visibilityProbability && (
+            <div className="flex items-start gap-2 rounded-md bg-muted/30 p-3 text-sm">
+              <Eye className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+              <div>
+                <div className="font-semibold text-foreground">Probabilitat d'avistament</div>
+                <div className="text-muted-foreground">{animal.visibilityProbability}</div>
+              </div>
+            </div>
+          )}
+
+          {!isLocked && (
+        <>
+          {animal.shortDescription && (
+            <div className="rounded-lg border border-border bg-muted/30 p-4">
+              <div className="mb-1 font-semibold text-foreground">Descripció</div>
+              <p className="text-sm leading-relaxed text-muted-foreground">{animal.shortDescription}</p>
+            </div>
+          )}
+        </>
+      )}
+
       {animal.locationDescription && (
         <div className="flex items-start gap-2 rounded-md bg-muted/30 p-3 text-sm">
           <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
@@ -88,39 +121,6 @@ export default function AnimalInfoCard({ animal, isLocked, onUnlock }: AnimalInf
             <div className="text-muted-foreground">{animal.sightingMonths.join(", ")}</div>
           </div>
         </div>
-      )}
-
-      {isLocked && (
-        <div className="rounded-lg border-2 border-primary/30 bg-primary/10 p-4 shadow-md">
-          <p className="mb-3 text-sm text-foreground">
-            Desbloqueja aquest animal per veure tota la informació i contribuir amb les teves fotos
-          </p>
-          <Button onClick={onUnlock} className="w-full font-bold shadow-md">
-            <Lock className="mr-2 h-4 w-4" />
-            Desbloqueja ara
-          </Button>
-        </div>
-      )}
-
-      {!isLocked && (
-        <>
-          {animal.visibilityProbability && (
-            <div className="flex items-start gap-2 rounded-md bg-muted/30 p-3 text-sm">
-              <Eye className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-              <div>
-                <div className="font-semibold text-foreground">Probabilitat d'avistament</div>
-                <div className="text-muted-foreground">{animal.visibilityProbability}</div>
-              </div>
-            </div>
-          )}
-
-          {animal.shortDescription && (
-            <div className="rounded-lg border border-border bg-muted/30 p-4">
-              <div className="mb-1 font-semibold text-foreground">Descripció</div>
-              <p className="text-sm leading-relaxed text-muted-foreground">{animal.shortDescription}</p>
-            </div>
-          )}
-        </>
       )}
     </div>
   )
