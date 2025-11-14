@@ -93,25 +93,7 @@ export default function AnimalInfoCard({ animal, isLocked, onUnlock }: AnimalInf
         </div>
       )}
 
-      {animal.mapUrl && (
-        <div className="rounded-lg border-2 border-primary/20 bg-muted/20 p-3 shadow-sm">
-          <div className="mb-2 flex items-center gap-2 text-sm font-bold text-foreground">
-            <MapPin className="h-4 w-4 text-primary" />
-            Zones de Catalunya
-          </div>
-          <div className="aspect-video overflow-hidden rounded-md bg-muted">
-            <img
-              src={animal.mapUrl || "/placeholder.svg"}
-              alt="Mapa de zones"
-              className="h-full w-full object-cover"
-              onError={(e) => {
-                console.error("[v0] Error loading map image:", animal.mapUrl)
-                e.currentTarget.src = "/placeholder.svg?height=200&width=400"
-              }}
-            />
-          </div>
-        </div>
-      )}
+    
 
       {animal.sightingMonths && animal.sightingMonths.length > 0 && (
         <div className="flex items-start gap-2 rounded-md bg-muted/30 p-3 text-sm">

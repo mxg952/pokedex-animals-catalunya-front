@@ -5,6 +5,10 @@ import { apiClient } from "@/lib/api-client"
 import type { Animal, AnimalPhoto } from "@/lib/types"
 import AnimalInfoCard from "./animal-detail/animal-info-card"
 import PhotoGallery from "./animal-detail/photo-gallery"
+import { Lock } from "lucide-react" // ✅ Importem icona de bloqueig
+import MapCard from '@/components/animal-detail/mapa-location'
+
+
 
 interface AnimalDetailViewerProps {
   animal: Animal | null
@@ -127,18 +131,52 @@ export default function AnimalDetailViewer({ animal, userAnimals, onUnlock, onRe
         
         {/* ✅ COLUMNA ESQUERRA */}
         <div className="space-y-4">
-          {/* INFORMACIÓ DE L'ANIMAL (el teu AnimalInfoCard actual) */}
+          {/* INFORMACIÓ DE L'ANIMAL */}
           <div className="rounded-xl border-2 border-secondary/20 bg-gradient-to-br from-background to-secondary/5 p-4">
             <AnimalInfoCard animal={animal} isLocked={isLocked} onUnlock={onUnlock} />
           </div>
         </div>
 
         {/* ✅ COLUMNA DRETA */}
+        
         <div className="space-y-4">
 
-          {/* ALBUM DE FOTOS (el teu PhotoGallery actual) */}
-          {!isLocked && (
-            <div className="rounded-xl border-2 border-secondary/20 bg-gradient-to-br from-background to-secondary/5 p-4">
+          <MapCard animal={animal} isLocked={!isLocked} />
+          {/* ✅ ALBUM DE FOTOS - SEMPRE VISIBLE */}
+          <div className={`rounded-xl border-2 ${isLocked ? 'border-destructive/20 bg-destructive/5' : 'border-secondary/20 bg-gradient-to-br from-background to-secondary/5'} p-4`}>
+            
+            {/* ✅ TÍTOL AMB ICONA DE BLOQUEIG SI CAL */}
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="font-serif text-xl font-bold text-foreground">Les meves fotos</h3>
+              {isLocked && (
+                <div className="flex items-center gap-2 text-destructive">
+                  <Lock className="h-5 w-5" />
+                  <span className="text-sm font-medium">Bloquejat</span>
+                </div>
+              )}
+            </div>
+
+            {isLocked ? (
+              /* ✅ ESTAT BLOQUEJAT - ÀLBUM NO DISPONIBLE */
+              <div className="rounded-lg border-2 border-dashed border-destructive/30 bg-destructive/10 p-8 text-center">
+                <div className="mb-4 flex justify-center">
+                  <div className="rounded-full bg-destructive/20 p-4">
+                    <Lock className="h-8 w-8 text-destructive" />
+                  </div>
+                </div>
+                <h4 className="mb-2 text-lg font-semibold text-destructive">Àlbum bloquejat</h4>
+                <p className="text-sm text-destructive/80 mb-4">
+                  Desbloqueja aquest animal per poder afegir les teves fotos a l'àlbum
+                </p>
+                <button
+                  onClick={onUnlock}
+                  className="inline-flex items-center gap-2 rounded-lg bg-destructive px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-destructive/80"
+                >  <Lock className="mr-2 h-4 w-4" />
+                  Desbloqueja l'animal
+                </button>
+              </div>
+            ) : (
+              /* ✅ ESTAT DESBLOQUEJAT - ÀLBUM NORMAL */
               <PhotoGallery
                 photos={photos}
                 onAddPhoto={handleAddPhoto}
@@ -147,8 +185,8 @@ export default function AnimalDetailViewer({ animal, userAnimals, onUnlock, onRe
                 onRefresh={onRefresh}
                 fetchPhotos={fetchPhotos}
               />
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>

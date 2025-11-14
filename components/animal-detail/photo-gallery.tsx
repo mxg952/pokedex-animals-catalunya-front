@@ -73,13 +73,6 @@ export default function PhotoGallery({
   return (
     <>
       <div className="rounded-xl border-2 border-secondary/20 bg-gradient-to-br from-background to-secondary/5 p-6 shadow-lg pokedex-card">
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="font-serif text-xl font-bold text-foreground">Les meves fotos</h3>
-          <Badge variant="secondary" className="font-bold">
-            {photos.length}
-          </Badge>
-        </div>
-
         {photos.length === 0 ? (
           <div className="rounded-lg border-2 border-dashed border-border bg-muted/20 p-8 text-center">
             <div className="mb-2 text-3xl">📸</div>

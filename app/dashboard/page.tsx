@@ -196,6 +196,7 @@ export default function DashboardPage() {
   if (!user) {
     return null
   }
+  
 
   const getFilteredStats = () => {
     if (categoryFilter === "all" || !stats) {
@@ -234,6 +235,7 @@ export default function DashboardPage() {
 
       {/* ✅ FITXES D'ANIMALS - OCUPA TOTA L'ALTURA */}
       <div className="w-1/4 border-r border-border">
+      
         <div className="h-full flex flex-col bg-gradient-to-b from-background to-muted/5">
           <div className="p-4 flex-shrink-0 border-b border-border"> {/* ✅ Header fix */}
             <div className="mb-4">
@@ -263,6 +265,10 @@ export default function DashboardPage() {
 
       {/* ✅ VISUALITZADOR - OCUPA TOTA L'ALTURA */}
       <div className="w-2/4 h-screen overflow-y-auto bg-gradient-to-b from-muted/20 to-background p-6">
+      <div className="mb-4">
+              <h1 className="mb-1 font-serif text-xl font-bold text-foreground">Fitxa d'informació</h1>
+              <p className="text-xs text-muted-foreground">Consulta els detalls del animal seleccionat</p>
+            </div>
         <AnimalDetailViewer
           animal={selectedAnimal}
           userAnimals={userAnimals}
