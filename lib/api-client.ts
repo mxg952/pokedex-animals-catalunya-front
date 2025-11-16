@@ -10,6 +10,16 @@ export const apiClient = axios.create({
   timeout: 10000,
 })
 
+export const adminApi = {
+  getAllUsers: () => apiClient.get("/api/admin/users"),
+  createAnimal: (data: FormData) => apiClient.post("/api/admin/animals", data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  }),
+
+}
+
 // Add auth token to requests if available
 apiClient.interceptors.request.use((config) => {
   console.log("[v0] Making request to:", config.baseURL + config.url)
@@ -22,6 +32,8 @@ apiClient.interceptors.request.use((config) => {
   }
   return config
 })
+
+
 
 apiClient.interceptors.response.use(
   (response) => {
@@ -38,4 +50,7 @@ apiClient.interceptors.response.use(
     console.error("[v0] Full error:", error.message)
     return Promise.reject(error)
   },
+
+
+  
 )

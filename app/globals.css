@@ -207,3 +207,28 @@ body {
   background: linear-gradient(135deg, rgba(100, 116, 139, 0.1) 0%, rgba(71, 85, 105, 0.1) 100%);
   border-color: rgba(100, 116, 139, 0.3);
 }
+
+/* Scrollbar personalitzat */
+.animal-list-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--primary)) hsl(var(--muted));
+}
+
+.animal-list-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.animal-list-scrollbar::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 10px;
+  margin: 4px 0;
+}
+
+.animal-list-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary));
+  border-radius: 10px;
+}
+
+.animal-list-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.8);
+}

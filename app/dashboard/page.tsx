@@ -235,7 +235,6 @@ export default function DashboardPage() {
 
       {/* ✅ FITXES D'ANIMALS - OCUPA TOTA L'ALTURA */}
       <div className="w-1/4 border-r border-border">
-      
         <div className="h-full flex flex-col bg-gradient-to-b from-background to-muted/5">
           <div className="p-4 flex-shrink-0 border-b border-border"> {/* ✅ Header fix */}
             <div className="mb-4">
@@ -255,11 +254,15 @@ export default function DashboardPage() {
           </div>
           
           {/* ✅ Llista ocupa tot l'espai restant */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="p-4">
-              <AnimalList animals={filteredAnimals} selectedAnimal={selectedAnimal} onSelectAnimal={setSelectedAnimal} />
-            </div>
-          </div>
+              <div className="flex-1 overflow-y-auto animal-list-scrollbar">
+  <div className="p-4">
+    <AnimalList 
+      animals={filteredAnimals} 
+      selectedAnimal={selectedAnimal} 
+      onSelectAnimal={setSelectedAnimal} 
+    />
+  </div>
+</div>
         </div>
       </div>
 
@@ -282,6 +285,23 @@ export default function DashboardPage() {
         />
       </div>
     </div>
+
+    {user?.role === 'ADMIN' && (
+  <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+    <div className="flex items-center justify-between">
+      <div>
+        <h3 className="font-semibold text-blue-900">Accés Administrador</h3>
+        <p className="text-blue-700 text-sm">Tens permisos d'administrador</p>
+      </div>
+      <a 
+        href="/admin"
+        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+      >
+        Accedir al Panell
+      </a>
+    </div>
+  </div>
+)}
     
     {showUnlockModal && animalToUnlock && (
       <UnlockAnimalModal
@@ -294,5 +314,6 @@ export default function DashboardPage() {
       />
     )}
   </div>
+  
 )
 }

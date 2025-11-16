@@ -66,6 +66,19 @@ export interface AnimalPhoto {
   userAnimalId: number
 }
 
+export interface CreateAnimalRequest {
+  commonName: string
+  scientificName: string
+  category: string
+  shortDescription: string
+  locationDescription: string
+  visibilityProbability: number
+  sightingMonths: string
+  mapUrl: string
+  photoLockFileName: string
+  photoUnlockFileName: string
+}
+
 export type CharacterType = "explorer" | "scientist" | "photographer"
 
 export interface User {
@@ -73,6 +86,15 @@ export interface User {
   token: string
   role: "USER_ROLE" | "ADMIN_ROLE"
   character?: CharacterType
+}
+
+export interface UserInfo {
+  id: number
+  username: string
+  role: string
+  createdAt: string
+  unlockedAnimalsCount: number
+  uploadedPhotosCount: number
 }
 
 export interface AnimalLockDto {
