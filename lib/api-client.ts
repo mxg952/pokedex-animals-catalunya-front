@@ -14,10 +14,9 @@ export const adminApi = {
   getAllUsers: () => apiClient.get("/api/admin/users"),
   createAnimal: (data: FormData) => apiClient.post("/api/admin/animals", data, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "multipart/form-data", // ✅ Asegurar este header
     },
   }),
-
 }
 
 // Add auth token to requests if available

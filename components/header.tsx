@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/lib/auth-context"
+import Image from "next/image"
 
 export function Header() {
   const pathname = usePathname()
@@ -17,11 +18,20 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between px-4">
+        
+        {/* Logo + Nom */}
         <Link href={user ? "/dashboard" : "/"} className="flex items-center space-x-2">
-          <span className="text-2xl">🦅</span>
-          <span className="font-serif text-xl font-bold text-foreground">Pokédex Catalunya</span>
+          <Image
+            src="/logo.png"
+            alt="Logo Animaldex"
+            width={36}
+            height={36}
+            className="object-contain"
+          />
+          <span className="font-serif text-xl font-bold text-foreground">Pokédex-Cat</span>
         </Link>
 
+        {/* Navegació */}
         <nav className="flex items-center gap-6">
           {user ? (
             <>
@@ -33,7 +43,7 @@ export function Header() {
               >
                 Inici
               </Link>
-              
+
               {user.role === "ADMIN_ROLE" && (
                 <Link
                   href="/admin"
@@ -44,6 +54,7 @@ export function Header() {
                   Administrador
                 </Link>
               )}
+
               <Button onClick={logout} variant="ghost" size="sm">
                 Tancar sessió
               </Button>

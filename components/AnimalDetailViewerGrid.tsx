@@ -7,6 +7,7 @@ import AnimalInfoCard from "./animal-detail/animal-info-card"
 import PhotoGallery from "./animal-detail/photo-gallery"
 import { Lock } from "lucide-react" // ✅ Importem icona de bloqueig
 import MapCard from '@/components/animal-detail/mapa-location'
+import MapComponent from "@/components/animal-detail/mapa-location"
 
 
 
@@ -141,7 +142,7 @@ export default function AnimalDetailViewer({ animal, userAnimals, onUnlock, onRe
         
         <div className="space-y-4">
 
-          <MapCard animal={animal} isLocked={!isLocked} />
+          <MapComponent animal={animal} isLocked={isLocked} />
           {/* ✅ ALBUM DE FOTOS - SEMPRE VISIBLE */}
           <div className={`rounded-xl border-2 ${isLocked ? 'border-destructive/20 bg-destructive/5' : 'border-secondary/20 bg-gradient-to-br from-background to-secondary/5'} p-4`}>
             

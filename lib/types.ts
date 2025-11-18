@@ -3,14 +3,21 @@ export interface Animal {
   commonName: string
   scientificName: string
   category: string
-  visibilityProbability?: string
-  sightingMonths?: string[]
-  shortDescription?: string
-  locationDescription?: string
-  mapUrl?: string
-  photoLockUrl?: string
-  photoUnlockUrl?: string
-  isLocked?: boolean
+  visibilityProbability: string
+  sightingMonths: string[]
+  shortDescription: string
+  locationDescription: string
+  mapUrl?: string // ← Opcional ahora
+  mapCoordinates?: MapCoordinate[] // ← Nuevo campo
+  photoLockFileName: string
+  photoUnlockFileName: string
+}
+
+export interface MapCoordinate {
+  lat: number
+  lng: number
+  name: string
+  description: string
 }
 
 export interface UserAnimal {
@@ -72,7 +79,7 @@ export interface CreateAnimalRequest {
   category: string
   shortDescription: string
   locationDescription: string
-  visibilityProbability: number
+  visibilityProbability: string
   sightingMonths: string
   mapUrl: string
   photoLockFileName: string

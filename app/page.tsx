@@ -9,7 +9,7 @@ export default function HomePage() {
         <div className="absolute inset-0 -z-10 bg-[url('/paisatge-natural-de-catalunya-amb-muntanyes-i-bosc.jpg')] bg-cover bg-center opacity-10" />
 
         <h1 className="mb-6 text-balance font-serif text-5xl font-bold tracking-tight text-foreground md:text-6xl lg:text-7xl">
-          Pokédex d'Animals de Catalunya
+          Catàleg d'Animals de Catalunya
         </h1>
 
         <p className="mb-8 max-w-2xl text-pretty text-lg text-muted-foreground md:text-xl">

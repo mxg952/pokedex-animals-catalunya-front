@@ -12,6 +12,17 @@ interface AnimalInfoCardProps {
 }
 
 export default function AnimalInfoCard({ animal, isLocked, onUnlock }: AnimalInfoCardProps) {
+  // Función para determinar el color de la probabilidad
+  const getProbabilityColor = (probability: string) => {
+    const prob = probability?.toLowerCase()
+    if (prob?.includes('alta') || prob?.includes('high')) return 'text-green-600'
+    if (prob?.includes('mitjana') || prob?.includes('medium')) return 'text-yellow-600'
+    if (prob?.includes('baixa') || prob?.includes('low')) return 'text-red-600'
+    return 'text-muted-foreground'
+  }
+
+  const probabilityColor = getProbabilityColor(animal.visibilityProbability)
+
   return (
     <div
       className={`space-y-4 rounded-xl border-2 p-6 shadow-lg pokedex-card ${
@@ -50,7 +61,7 @@ export default function AnimalInfoCard({ animal, isLocked, onUnlock }: AnimalInf
         )}
       </div>
 
-       {isLocked && (
+      {isLocked && (
         <div className="rounded-lg border-2 border-primary/30 bg-primary/10 p-4 shadow-md">
           <p className="mb-3 text-sm text-foreground">
             Desbloqueja aquest animal per veure tota la informació i contribuir amb les teves fotos
@@ -62,48 +73,62 @@ export default function AnimalInfoCard({ animal, isLocked, onUnlock }: AnimalInf
         </div>
       )}
 
-      {animal.visibilityProbability && (
-            <div className="flex items-start gap-2 rounded-md bg-muted/30 p-3 text-sm">
-              <Eye className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-              <div>
-                <div className="font-semibold text-foreground">Probabilitat d'avistament</div>
-                <div className="text-muted-foreground">{animal.visibilityProbability}</div>
-              </div>
+      {/* PROBABILIDAD DE AVISTAMIENTO Y MESES JUNTOS - SIEMPRE VISIBLES */}
+      <div className="space-y-3 rounded-lg border border-border bg-muted/30 p-4">
+        {/* Probabilidad - SIEMPRE VISIBLE */}
+        {animal.visibilityProbability && (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Eye className="h-4 w-4 text-accent" />
+              <span className="font-semibold text-foreground">Probabilitat d'avistament</span>
             </div>
-          )}
-
-          {!isLocked && (
-        <>
-          {animal.shortDescription && (
-            <div className="rounded-lg border border-border bg-muted/30 p-4">
-              <div className="mb-1 font-semibold text-foreground">Descripció</div>
-              <p className="text-sm leading-relaxed text-muted-foreground">{animal.shortDescription}</p>
-            </div>
-          )}
-        </>
-      )}
-
-      {animal.locationDescription && (
-        <div className="flex items-start gap-2 rounded-md bg-muted/30 p-3 text-sm">
-          <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-          <div>
-            <div className="font-semibold text-foreground">Hàbitat</div>
-            <div className="text-muted-foreground">{animal.locationDescription}</div>
+            <Badge 
+              variant="outline" 
+              className={`font-medium ${probabilityColor} border-current`}
+            >
+              {animal.visibilityProbability}
+            </Badge>
           </div>
-        </div>
-      )}
+        )}
 
-    
-
-      {animal.sightingMonths && animal.sightingMonths.length > 0 && (
-        <div className="flex items-start gap-2 rounded-md bg-muted/30 p-3 text-sm">
+        {/* Meses de Avistamiento - SIEMPRE VISIBLE */}
+        <div className="flex items-start gap-2 pt-2 border-t border-border/50">
           <Calendar className="mt-0.5 h-4 w-4 shrink-0 text-secondary" />
-          <div>
-            <div className="font-semibold text-foreground">Mesos d'avistament</div>
-            <div className="text-muted-foreground">{animal.sightingMonths.join(", ")}</div>
+          <div className="flex-1">
+            <div className="font-semibold text-foreground mb-2">Mesos d'avistament</div>
+            
+            {animal.sightingMonths && animal.sightingMonths.length > 0 ? (
+              // ✅ MOSTRAR MESES (siempre visible)
+              <div className="flex flex-wrap gap-1">
+                {animal.sightingMonths.map((month, index) => (
+                  <Badge 
+                    key={index} 
+                    variant="secondary"
+                    className="text-xs bg-blue-50 text-blue-700 border-blue-200 font-medium"
+                  >
+                    {month.trim()}
+                  </Badge>
+                ))}
+              </div>
+            ) : (
+              // ✅ MOSTRAR MENSAJE CUANDO NO HAY MESES (siempre visible)
+              <div className="text-sm text-muted-foreground italic">
+                No s'han especificat mesos d'observació
+              </div>
+            )}
           </div>
         </div>
+      </div>
+
+      {/* Descripción - SOLO DESBLOQUEADO */}
+      {!isLocked && animal.shortDescription && (
+        <div className="rounded-lg border border-border bg-muted/30 p-4">
+          <div className="mb-1 font-semibold text-foreground">Descripció</div>
+          <p className="text-sm leading-relaxed text-muted-foreground">{animal.shortDescription}</p>
+        </div>
       )}
+
+
     </div>
   )
 }

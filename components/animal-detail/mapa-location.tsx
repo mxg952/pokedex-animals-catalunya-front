@@ -1,124 +1,126 @@
 "use client"
 
-import { useEffect, useRef } from 'react';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { MapPin, ExternalLink } from "lucide-react"
+import type { Animal } from "@/lib/types"
+import { useEffect, useState } from "react"
 
-interface MapComponentProps {
-  animal: {
-    commonName: string;
-    locationDescription?: string;
-  };
+interface MapCardProps {
+  animal: Animal
+  isLocked: boolean
 }
 
-export default function MapComponent({ animal }: MapComponentProps) {
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<L.Map | null>(null);
-
-  // ✅ MULTIPLES ZONES PER A CADA ANIMAL
-  const getAnimalZones = (animalName: string): Array<{coords: [number, number], name: string, description: string}> => {
-    const zones: { [key: string]: Array<{coords: [number, number], name: string, description: string}> } = {
-      "Isard": [
-        { coords: [42.65, 1.02], name: "Parc Nacional d'Aigüestortes", description: "Zones d'alta muntanya" },
-        { coords: [42.40, 1.25], name: "Alt Pirineu", description: "Prades i boscos" },
-        { coords: [42.25, 1.75], name: "Cadí-Moixeró", description: "Serralades rocoses" },
-        { coords: [42.15, 2.10], name: "Garrotxa", description: "Zones volcàniques" }
-      ],
-      "Àliga": [
-        { coords: [42.30, 1.80], name: "Serra del Cadí", description: "Cingles i penya-segats" },
-        { coords: [41.85, 2.25], name: "Montseny", description: "Boscos densos" },
-        { coords: [42.10, 0.95], name: "Pallars Sobirà", description: "Zones rocoses" },
-        { coords: [41.45, 1.90], name: "Montserrat", description: "Cims emblemàtics" }
-      ],
-      "Tortuga mediterrània": [
-        { coords: [41.45, 2.10], name: "Garraf", description: "Zones mediterrànies" },
-        { coords: [41.60, 2.45], name: "Costa Maresme", description: "Pinedes costaneres" },
-        { coords: [41.30, 1.85], name: "Penedès", description: "Zones agrícoles" },
-        { coords: [41.15, 1.25], name: "Costa Daurada", description: "Dunes i platges" }
-      ],
-      "Gamarús": [
-        { coords: [42.20, 2.80], name: "Albera", description: "Boscos humits" },
-        { coords: [41.95, 2.35], name: "Guilleries", description: "Rouredes" },
-        { coords: [42.00, 2.15], name: "Collsacabra", description: "Boscos de fajosa" },
-        { coords: [41.75, 2.50], name: "Montnegre", description: "Zones ombrívoles" }
-      ],
-      "Barrallet": [
-        { coords: [41.55, 0.65], name: "Riu Ebre", description: "Aigües tranquil·les" },
-        { coords: [41.85, 0.85], name: "Riu Segre", description: "Corrents fluvials" },
-        { coords: [42.35, 1.40], name: "Riu Noguera", description: "Zones d'aigua dolça" },
-        { coords: [41.70, 2.85], name: "Riu Ter", description: "Desembocadures" }
-      ]
-    };
-    
-    return zones[animalName] || [
-      { coords: [41.5912, 1.5209], name: "Catalunya Central", description: "Zones diverses" }
-    ];
-  };
+export default function MapCard({ animal, isLocked }: MapCardProps) {
+  const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
-    if (!mapContainer.current || mapRef.current) return;
+    setIsClient(true)
+  }, [])
 
-    // ✅ CORRECCIÓN: Configurar los iconos de forma segura
-    const defaultIcon = L.icon({
-      iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-      iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
-      shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41]
-    });
-
-    L.Marker.prototype.options.icon = defaultIcon;
-
-    const zones = getAnimalZones(animal.commonName);
-    
-    // ✅ Calcula el centre mitjà de totes les zones
-    const avgLat = zones.reduce((sum, zone) => sum + zone.coords[0], 0) / zones.length;
-    const avgLng = zones.reduce((sum, zone) => sum + zone.coords[1], 0) / zones.length;
-
-    // Inicialitza el mapa al centre mitjà
-    const map = L.map(mapContainer.current).setView([avgLat, avgLng], 8);
-    mapRef.current = map;
-
-    // Capa d'OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    // ✅ Crea el featureGroup primero
-    const featureGroup = L.featureGroup();
-
-    // ✅ AFEGEIX MULTIPLES MARCADORS al mapa Y al featureGroup
-    zones.forEach((zone, index) => {
-      const marker = L.marker(zone.coords)
-        .addTo(map)
-        .bindPopup(`
-          <div class="text-sm">
-            <strong>${zone.name}</strong><br/>
-            <em>${zone.description}</em><br/>
-            <span class="text-xs text-gray-600">Zona ${index + 1} per a ${animal.commonName}</span>
-          </div>
-        `);
-      
-      featureGroup.addLayer(marker);
-    });
-
-    // ✅ Ajusta los bounds
-    map.fitBounds(featureGroup.getBounds(), { padding: [20, 20] });
-
-    return () => {
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
+  // Función para convertir URL de embed a URL normal de Google Maps
+  const getNormalGoogleMapsUrl = (embedUrl: string): string => {
+    try {
+      // Si ya es un URL normal (no embed), devolverlo tal cual
+      if (embedUrl.includes('/maps/') && !embedUrl.includes('/embed')) {
+        return embedUrl
       }
-    };
-  }, [animal.commonName]);
+      
+      // Si es un URL de embed, intentar extraer las coordenadas para crear un URL normal
+      const url = new URL(embedUrl)
+      
+      // Buscar coordenadas en el parámetro pb (el encoded map data)
+      const pbParam = url.searchParams.get('pb')
+      if (pbParam) {
+        // El parámetro pb contiene datos codificados, pero es complejo de decodificar
+        // En su lugar, podemos usar un enfoque más simple
+      }
+      
+      // Para URLs de embed, simplemente usamos el mismo URL ya que son iframes válidos
+      return embedUrl
+      
+    } catch (error) {
+      console.error('Error procesando URL:', error)
+      return embedUrl
+    }
+  }
+
+  // Evitar renderizado en servidor
+  if (!isClient) {
+    return (
+      <Card className="rounded-xl border-2 border-blue-200/20 bg-gradient-to-br from-blue-50/50 to-blue-100/30">
+        <CardContent className="p-6">
+          <div className="aspect-video rounded-lg bg-blue-100/50 flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+              <p className="text-sm text-blue-700">Carregant mapa...</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
-    <div 
-      ref={mapContainer} 
-      className="aspect-video rounded-md overflow-hidden shadow-md"
-    />
-  );
+    <Card className="rounded-xl border-2 border-blue-200/20 bg-gradient-to-br from-blue-50/50 to-blue-100/30">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-blue-900">
+          <MapPin className="h-5 w-5" />
+          Ubicació i Mapa
+          <ExternalLink className="h-4 w-4 ml-auto text-blue-600" />
+        </CardTitle>
+      </CardHeader>
+      
+      <CardContent className="space-y-3">
+  {animal.mapUrl ? (
+    <>
+      {/* Mapa interactivo - SIEMPRE VISIBLE */}
+      <div className="aspect-video rounded-lg overflow-hidden border border-blue-200 shadow-sm relative">
+        {/* Mapa embebido - USAR DIRECTAMENTE el URL de la BD - SIEMPRE VISIBLE */}
+        <iframe
+          src={animal.mapUrl}
+          width="100%"
+          height="100%"
+          style={{ border: 0 }}
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          title={`Mapa de ${animal.commonName}`}
+        />
+        
+        {/* Overlay para abrir en Google Maps - SIEMPRE VISIBLE */}
+        <a 
+          href={animal.mapUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute top-2 right-2 bg-white/90 px-3 py-1 rounded-full text-sm font-medium text-blue-700 opacity-0 hover:opacity-100 transition-opacity flex items-center gap-1 shadow-sm"
+        >
+          <ExternalLink className="h-3 w-3" />
+          Obrir
+        </a>
+      </div>
+
+      {/* Información de ubicación - SIEMPRE VISIBLE */}
+      {animal.locationDescription && (
+        <div className="bg-white/50 rounded-lg p-3 border border-blue-100">
+          <p className="text-sm text-blue-800 leading-relaxed">
+            {animal.locationDescription}
+          </p>
+        </div>
+      )}
+    </>
+  ) : (
+    /* Sin mapa definido */
+    <div className="aspect-video rounded-lg border-2 border-dashed border-blue-200 bg-blue-50/30 flex items-center justify-center">
+      <div className="text-center p-6">
+        <div className="mb-3 text-4xl">🗺️</div>
+        <h4 className="font-semibold text-blue-900 mb-2">Sense mapa definit</h4>
+        <p className="text-sm text-blue-700">
+          No s'ha definit cap ubicació per a aquest animal
+        </p>
+      </div>
+    </div>
+  )}
+</CardContent>
+    </Card>
+  )
 }

@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"] })
 const lora = Lora({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Pokédex d'Animals de Catalunya",
+  title: "Catàleg d'Animals de Catalunya",
   description: "Descobreix i cataloga la fauna autòctona de Catalunya",
     generator: 'v0.app'
 }
