@@ -1,74 +1,81 @@
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative flex min-h-[90vh] flex-col items-center justify-center px-6 py-20 text-center">
-        <div className="absolute inset-0 -z-10 bg-[url('/paisatge-natural-de-catalunya-amb-muntanyes-i-bosc.jpg')] bg-cover bg-center opacity-10" />
+    <div className="grid h-screen grid-cols-1 md:grid-cols-2">
+      
+      {/* ESQUERRA: LOGO + EXPLICACIÓ (igual que en Login) */}
+      <div className="relative flex flex-col items-center justify-center bg-muted px-8 text-center">
 
-        <h1 className="mb-6 text-balance font-serif text-5xl font-bold tracking-tight text-foreground md:text-6xl lg:text-7xl">
-          Catàleg d'Animals de Catalunya
+        {/* Logo GEGANT */}
+        <Image
+          src="/logo.png"
+          alt="Logo Animaldex"
+          width={350}
+          height={350}
+          className="opacity-90 drop-shadow-2xl mb-8"
+          priority
+        />
+
+        {/* Títol EXPOSITIU */}
+        <h1 className="text-4xl font-extrabold mb-4 tracking-tight">
+          Benvingut a la <span className="text-primary">Pokédex-Cat</span>
         </h1>
 
-        <p className="mb-8 max-w-2xl text-pretty text-lg text-muted-foreground md:text-xl">
-          Descobreix, desbloqueja i cataloga la fauna autòctona de Catalunya. Una enciclopèdia viva dels animals que
-          habiten el nostre territori.
+        {/* Text EXPLICATIU IMPORTANT */}
+        <p className="max-w-md text-lg text-muted-foreground leading-relaxed">
+          Descobreix animals reals, desbloqueja fitxes úniques i completa
+          la teva pròpia enciclopèdia interactiva. Observa, aprèn i competeix
+          amb els teus amics per veure qui pot capturar més espècies!
         </p>
+      </div>
 
-        <div className="flex flex-col gap-4 sm:flex-row">
-          <Link href="/login">
-            <Button size="lg" className="text-base">
-              Iniciar sessió
-            </Button>
-          </Link>
-          <Link href="/register">
-            <Button size="lg" variant="outline" className="text-base bg-transparent">
-              Registrar-se
-            </Button>
-          </Link>
-        </div>
-      </section>
+      {/* DRETA: CONTINGUT PRINCIPAL */}
+      <div className="flex items-center justify-center px-8 py-12 bg-background">
+        <div className="w-full max-w-md text-center">
 
-      {/* Features Section */}
-      <section className="border-t border-border bg-muted/30 px-6 py-20">
-        <div className="mx-auto max-w-6xl">
-          <h2 className="mb-12 text-center font-serif text-3xl font-bold text-foreground md:text-4xl">Com funciona</h2>
+          <h2 className="mb-2 font-serif text-4xl font-bold text-foreground">
+            Catàleg d'Animals de Catalunya
+          </h2>
+          
+          <p className="mb-8 text-muted-foreground">
+            Descobreix, desbloqueja i cataloga la fauna autòctona de Catalunya
+          </p>
 
-          <div className="grid gap-8 md:grid-cols-3">
-            <div className="rounded-lg border border-border bg-background p-6">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                <span className="text-2xl font-bold text-primary">1</span>
-              </div>
-              <h3 className="mb-2 font-serif text-xl font-semibold">Descobreix animals</h3>
-              <p className="text-muted-foreground">
-                Explora el catàleg complet d'animals de Catalunya. Cada espècie espera ser descoberta.
+          <div className="rounded-lg border border-border bg-background p-8 shadow-sm space-y-6">
+            
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold text-foreground">
+                Comença la teva aventura
+              </h3>
+              
+              <p className="text-sm text-muted-foreground">
+                Uneix-te a la comunitat i comença a catalogar els animals de Catalunya
               </p>
             </div>
 
-            <div className="rounded-lg border border-border bg-background p-6">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                <span className="text-2xl font-bold text-primary">2</span>
-              </div>
-              <h3 className="mb-2 font-serif text-xl font-semibold">Puja fotografies</h3>
-              <p className="text-muted-foreground">
-                Quan trobis un animal, puja una fotografia per desbloquejar la seva informació completa.
-              </p>
+            <div className="flex flex-col gap-3">
+              <Link href="/login" className="w-full">
+                <Button size="lg" className="w-full text-base">
+                  Iniciar sessió
+                </Button>
+              </Link>
+              
+              <Link href="/register" className="w-full">
+                <Button size="lg" variant="outline" className="w-full text-base bg-transparent">
+                  Registrar-se
+                </Button>
+              </Link>
             </div>
 
-            <div className="rounded-lg border border-border bg-background p-6">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                <span className="text-2xl font-bold text-primary">3</span>
-              </div>
-              <h3 className="mb-2 font-serif text-xl font-semibold">Completa el catàleg</h3>
-              <p className="text-muted-foreground">
-                Segueix el teu progrés i converteix-te en un expert de la fauna catalana.
-              </p>
-            </div>
+
+
           </div>
         </div>
-      </section>
+      </div>
+
     </div>
   )
 }

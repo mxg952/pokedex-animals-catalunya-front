@@ -23,7 +23,10 @@ import {
   Zap,
   Trophy,
   Activity,
-  Search
+  Search,
+  CheckCircle,
+  XCircle,
+  AlertCircle
 } from 'lucide-react'
 import type { UserInfo, CreateAnimalRequest } from "@/lib/types"
 
@@ -37,6 +40,15 @@ interface ApiUserInfo {
   uploadedPhotos: number
   lastActivity?: string
   role?: string
+}
+
+// Interface para las notificaciones
+interface Notification {
+  id: string
+  type: 'success' | 'error' | 'warning'
+  title: string
+  message: string
+  icon: React.ReactNode
 }
 
 export default function AdminDashboard() {
@@ -61,6 +73,31 @@ export default function AdminDashboard() {
   const [lockedImage, setLockedImage] = useState<File | null>(null)
   const [unlockedImage, setUnlockedImage] = useState<File | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [notifications, setNotifications] = useState<Notification[]>([])
+
+  // Función para mostrar notificaciones
+  const showNotification = (type: 'success' | 'error' | 'warning', title: string, message: string) => {
+    const icons = {
+      success: <CheckCircle className="h-5 w-5 text-green-500" />,
+      error: <XCircle className="h-5 w-5 text-red-500" />,
+      warning: <AlertCircle className="h-5 w-5 text-orange-500" />
+    }
+
+    const newNotification: Notification = {
+      id: Date.now().toString(),
+      type,
+      title,
+      message,
+      icon: icons[type]
+    }
+
+    setNotifications(prev => [...prev, newNotification])
+
+    // Auto-remover después de 5 segundos
+    setTimeout(() => {
+      setNotifications(prev => prev.filter(notif => notif.id !== newNotification.id))
+    }, 5000)
+  }
 
   useEffect(() => {
     if (!authLoading && (!user || user.role !== "ADMIN_ROLE")) {
@@ -89,6 +126,7 @@ export default function AdminDashboard() {
       setUsers(response.data)
     } catch (error) {
       console.error("Error fetching users:", error)
+      showNotification('error', 'Error', 'No s\'han pogut carregar els usuaris')
     } finally {
       setIsLoading(false)
     }
@@ -98,7 +136,12 @@ export default function AdminDashboard() {
     e.preventDefault()
     
     if (!newAnimal.commonName || !newAnimal.scientificName || !newAnimal.category) {
-      alert("Si us plau, omple tots els camps obligatoris")
+      showNotification('warning', 'Camps obligatoris', 'Si us plau, omple tots els camps obligatoris')
+      return
+    }
+
+    if (!lockedImage) {
+      showNotification('warning', 'Imatge requerida', 'Si us plau, selecciona una imatge bloquejada')
       return
     }
 
@@ -156,10 +199,11 @@ export default function AdminDashboard() {
       setLockedImage(null)
       setUnlockedImage(null)
       
-      alert("Animal creat correctament!")
+      showNotification('success', 'Animal creat!', `${newAnimal.commonName} s'ha afegit correctament a la base de dades`)
     } catch (error: any) {
       console.error("Error detallat:", error)
-      alert(`Error al crear l'animal: ${error.response?.data?.message || error.message}`)
+      const errorMessage = error.response?.data?.message || error.message || 'Error desconegut'
+      showNotification('error', 'Error al crear l\'animal', errorMessage)
     } finally {
       setIsSubmitting(false)
     }
@@ -186,11 +230,23 @@ export default function AdminDashboard() {
   }
 
   const getUserLevel = (unlockedAnimals: number, uploadedPhotos: number) => {
-    const score = unlockedAnimals * 2 + uploadedPhotos
-    if (score >= 20) return { level: "Expert", color: "bg-purple-100 text-purple-800 border-purple-300" }
-    if (score >= 10) return { level: "Intermedi", color: "bg-blue-100 text-blue-800 border-blue-300" }
-    return { level: "Principiant", color: "bg-green-100 text-green-800 border-green-300" }
+  const score = unlockedAnimals * 2 + uploadedPhotos
+  
+  if (score >= 30) return { 
+    level: "Expert", 
+    color: "bg-purple-100 text-purple-800 border-purple-300"
   }
+  
+  if (score >= 15) return { 
+    level: "Intermedi", 
+    color: "bg-blue-100 text-blue-800 border-blue-300"
+  }
+  
+  return { 
+    level: "Principiant", 
+    color: "bg-green-100 text-green-800 border-green-300"
+  }
+}
 
   if (authLoading || isLoading) {
     return (
@@ -206,6 +262,36 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-muted/10 to-background">
+      {/* Sistema de Notificaciones */}
+      <div className="fixed top-4 right-4 z-50 space-y-2 max-w-sm">
+        {notifications.map((notification) => (
+          <div
+            key={notification.id}
+            className={`
+              flex items-start gap-3 rounded-lg border p-4 shadow-lg backdrop-blur-sm transition-all duration-300
+              ${notification.type === 'success' 
+                ? 'bg-green-50 border-green-200 text-green-800' 
+                : notification.type === 'error'
+                ? 'bg-red-50 border-red-200 text-red-800'
+                : 'bg-orange-50 border-orange-200 text-orange-800'
+              }
+            `}
+          >
+            {notification.icon}
+            <div className="flex-1">
+              <h4 className="font-semibold">{notification.title}</h4>
+              <p className="text-sm mt-1">{notification.message}</p>
+            </div>
+            <button
+              onClick={() => setNotifications(prev => prev.filter(n => n.id !== notification.id))}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <XCircle className="h-4 w-4" />
+            </button>
+          </div>
+        ))}
+      </div>
+
       <div className="container mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
@@ -351,8 +437,6 @@ export default function AdminDashboard() {
                                     <p className="font-bold text-orange-700">{userInfo.uploadedPhotos}</p>
                                   </div>
                                 </div>
-
-                                
                               </div>
 
                               {userInfo.lastActivity && (
@@ -390,222 +474,222 @@ export default function AdminDashboard() {
             </Card>
           </TabsContent>
 
+          {/* Animals Tab - FORMULARIO COMPLETO */}
           <TabsContent value="animals">
-  <Card className="border-border bg-gradient-to-b from-card to-muted/5">
-    <div className="p-6">
-      <div className="mb-4 flex items-center gap-2">
-        <PlusCircle className="h-5 w-5 text-primary" />
-        <h2 className="font-serif text-xl font-bold text-foreground">
-          Afegir Nou Animal
-        </h2>
-      </div>
-      <p className="mb-6 text-sm text-muted-foreground">
-        Omple els camps per afegir un nou animal a la base de dades
-      </p>
-
-      <form onSubmit={handleCreateAnimal} className="space-y-4">
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="commonName">
-              Nom comú <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="commonName"
-              placeholder="Ex: Llop ibèric"
-              value={newAnimal.commonName}
-              onChange={(e) =>
-                setNewAnimal({ ...newAnimal, commonName: e.target.value })
-              }
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="scientificName">
-              Nom científic <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="scientificName"
-              placeholder="Ex: Canis lupus signatus"
-              value={newAnimal.scientificName}
-              onChange={(e) =>
-                setNewAnimal({ ...newAnimal, scientificName: e.target.value })
-              }
-              required
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="category">
-            Categoria <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id="category"
-            placeholder="Ex: Mamífers"
-            value={newAnimal.category}
-            onChange={(e) =>
-              setNewAnimal({ ...newAnimal, category: e.target.value })
-            }
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="shortDescription">Descripció curta</Label>
-          <Textarea
-            id="shortDescription"
-            placeholder="Descripció curta de l'animal..."
-            value={newAnimal.shortDescription}
-            onChange={(e) =>
-              setNewAnimal({ ...newAnimal, shortDescription: e.target.value })
-            }
-            rows={3}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="locationDescription">Descripció de la ubicació</Label>
-          <Textarea
-            id="locationDescription"
-            placeholder="On es pot trobar aquest animal..."
-            value={newAnimal.locationDescription}
-            onChange={(e) =>
-              setNewAnimal({ ...newAnimal, locationDescription: e.target.value })
-            }
-            rows={3}
-          />
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="visibilityProbability">
-              Probabilitat de visibilitat
-            </Label>
-            <Input
-              id="visibilityProbability"
-              placeholder="Mitjana"
-              value={newAnimal.visibilityProbability}
-              onChange={(e) =>
-                setNewAnimal({ ...newAnimal, visibilityProbability: e.target.value })
-              }
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="sightingMonths">Mesos d'observació</Label>
-            
-            {/* Selector de meses con checkboxes */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 p-3 border rounded-md bg-muted/20">
-              {[
-                'Gener', 'Febrer', 'Març', 'Abril', 'Maig', 'Juny',
-                'Juliol', 'Agost', 'Setembre', 'Octubre', 'Novembre', 'Desembre'
-              ].map(month => (
-                <div key={month} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id={`month-${month}`}
-                    checked={newAnimal.sightingMonths?.includes(month) || false}
-                    onChange={(e) => {
-                      const currentMonths = newAnimal.sightingMonths 
-                        ? newAnimal.sightingMonths.split(',').filter(m => m.trim())
-                        : [];
-                      
-                      if (e.target.checked) {
-                        if (!currentMonths.includes(month)) {
-                          currentMonths.push(month);
-                        }
-                      } else {
-                        const index = currentMonths.indexOf(month);
-                        if (index > -1) currentMonths.splice(index, 1);
-                      }
-                      
-                      setNewAnimal({
-                        ...newAnimal,
-                        sightingMonths: currentMonths.join(',')
-                      });
-                    }}
-                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                  />
-                  <Label 
-                    htmlFor={`month-${month}`} 
-                    className="text-sm font-normal cursor-pointer"
-                  >
-                    {month}
-                  </Label>
+            <Card className="border-border bg-gradient-to-b from-card to-muted/5">
+              <div className="p-6">
+                <div className="mb-4 flex items-center gap-2">
+                  <PlusCircle className="h-5 w-5 text-primary" />
+                  <h2 className="font-serif text-xl font-bold text-foreground">
+                    Afegir Nou Animal
+                  </h2>
                 </div>
-              ))}
-            </div>
-            
-            {/* Mostrar meses seleccionados */}
-            {newAnimal.sightingMonths && (
-              <div className="text-xs text-muted-foreground mt-2">
-                <strong>Mesos seleccionats:</strong> {newAnimal.sightingMonths}
+                <p className="mb-6 text-sm text-muted-foreground">
+                  Omple els camps per afegir un nou animal a la base de dades
+                </p>
+
+                <form onSubmit={handleCreateAnimal} className="space-y-4">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="commonName">
+                        Nom comú <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="commonName"
+                        placeholder="Ex: Llop ibèric"
+                        value={newAnimal.commonName}
+                        onChange={(e) =>
+                          setNewAnimal({ ...newAnimal, commonName: e.target.value })
+                        }
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="scientificName">
+                        Nom científic <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id="scientificName"
+                        placeholder="Ex: Canis lupus signatus"
+                        value={newAnimal.scientificName}
+                        onChange={(e) =>
+                          setNewAnimal({ ...newAnimal, scientificName: e.target.value })
+                        }
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="category">
+                      Categoria <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="category"
+                      placeholder="Ex: Mamífers"
+                      value={newAnimal.category}
+                      onChange={(e) =>
+                        setNewAnimal({ ...newAnimal, category: e.target.value })
+                      }
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="shortDescription">Descripció curta</Label>
+                    <Textarea
+                      id="shortDescription"
+                      placeholder="Descripció curta de l'animal..."
+                      value={newAnimal.shortDescription}
+                      onChange={(e) =>
+                        setNewAnimal({ ...newAnimal, shortDescription: e.target.value })
+                      }
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="locationDescription">Descripció de la ubicació</Label>
+                    <Textarea
+                      id="locationDescription"
+                      placeholder="On es pot trobar aquest animal..."
+                      value={newAnimal.locationDescription}
+                      onChange={(e) =>
+                        setNewAnimal({ ...newAnimal, locationDescription: e.target.value })
+                      }
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="visibilityProbability">
+                        Probabilitat de visibilitat
+                      </Label>
+                      <Input
+                        id="visibilityProbability"
+                        placeholder="Mitjana"
+                        value={newAnimal.visibilityProbability}
+                        onChange={(e) =>
+                          setNewAnimal({ ...newAnimal, visibilityProbability: e.target.value })
+                        }
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="sightingMonths">Mesos d'observació</Label>
+                      
+                      {/* Selector de meses con checkboxes */}
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 p-3 border rounded-md bg-muted/20">
+                        {[
+                          'Gener', 'Febrer', 'Març', 'Abril', 'Maig', 'Juny',
+                          'Juliol', 'Agost', 'Setembre', 'Octubre', 'Novembre', 'Desembre'
+                        ].map(month => (
+                          <div key={month} className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              id={`month-${month}`}
+                              checked={newAnimal.sightingMonths?.includes(month) || false}
+                              onChange={(e) => {
+                                const currentMonths = newAnimal.sightingMonths 
+                                  ? newAnimal.sightingMonths.split(',').filter(m => m.trim())
+                                  : [];
+                                
+                                if (e.target.checked) {
+                                  if (!currentMonths.includes(month)) {
+                                    currentMonths.push(month);
+                                  }
+                                } else {
+                                  const index = currentMonths.indexOf(month);
+                                  if (index > -1) currentMonths.splice(index, 1);
+                                }
+                                
+                                setNewAnimal({
+                                  ...newAnimal,
+                                  sightingMonths: currentMonths.join(',')
+                                });
+                              }}
+                              className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                            />
+                            <Label 
+                              htmlFor={`month-${month}`} 
+                              className="text-sm font-normal cursor-pointer"
+                            >
+                              {month}
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* Mostrar meses seleccionados */}
+                      {newAnimal.sightingMonths && (
+                        <div className="text-xs text-muted-foreground mt-2">
+                          <strong>Mesos seleccionats:</strong> {newAnimal.sightingMonths}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="mapUrl">URL del mapa</Label>
+                    <Input
+                      id="mapUrl"
+                      placeholder="https://..."
+                      value={newAnimal.mapUrl}
+                      onChange={(e) =>
+                        setNewAnimal({ ...newAnimal, mapUrl: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  {/* SECCIÓN DE ARCHIVOS */}
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="lockedImage">
+                        Imatge bloquejada <span className="text-muted-foreground">(obligatoria)</span>
+                      </Label>
+                      <Input
+                        id="lockedImage"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setLockedImage(e.target.files?.[0] || null)}
+                        required
+                      />
+                      {lockedImage && (
+                        <p className="text-xs text-muted-foreground">
+                          Fitxer seleccionat: {lockedImage.name}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="unlockedImage">Imatge desbloquejada</Label>
+                      <Input
+                        id="unlockedImage"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setUnlockedImage(e.target.files?.[0] || null)}
+                      />
+                      {unlockedImage && (
+                        <p className="text-xs text-muted-foreground">
+                          Fitxer seleccionat: {unlockedImage.name}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end pt-4">
+                    <Button type="submit" disabled={isSubmitting} className="gap-2">
+                      <PlusCircle className="h-4 w-4" />
+                      {isSubmitting ? "Creant..." : "Crear Animal"}
+                    </Button>
+                  </div>
+                </form>
               </div>
-            )}
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="mapUrl">URL del mapa</Label>
-          <Input
-            id="mapUrl"
-            placeholder="https://..."
-            value={newAnimal.mapUrl}
-            onChange={(e) =>
-              setNewAnimal({ ...newAnimal, mapUrl: e.target.value })
-            }
-          />
-        </div>
-
-        {/* ✅ SECCIÓN MODIFICADA - AHORA CON DOS CAMPOS DE ARCHIVO */}
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="lockedImage">
-              Imatge bloquejada <span className="text-muted-foreground">(obligatoria)</span>
-            </Label>
-            <Input
-              id="lockedImage"
-              type="file"
-              accept="image/*"
-              onChange={(e) => setLockedImage(e.target.files?.[0] || null)}
-              required
-            />
-            {lockedImage && (
-              <p className="text-xs text-muted-foreground">
-                Fitxer seleccionat: {lockedImage.name}
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="unlockedImage">Imatge desbloquejada</Label>
-            <Input
-              id="unlockedImage"
-              type="file"
-              accept="image/*"
-              onChange={(e) => setUnlockedImage(e.target.files?.[0] || null)}
-            />
-            {unlockedImage && (
-              <p className="text-xs text-muted-foreground">
-                Fitxer seleccionat: {unlockedImage.name}
-              </p>
-            )}
-          </div>
-        </div>
-        <div className="flex justify-end pt-4">
-          <Button type="submit" disabled={isSubmitting} className="gap-2">
-            <PlusCircle className="h-4 w-4" />
-            {isSubmitting ? "Creant..." : "Crear Animal"}
-          </Button>
-        </div>
-      </form>
-    </div>
-  </Card>
-</TabsContent>
+            </Card>
+          </TabsContent>
         </Tabs>
-
-    
       </div>
     </div>
   )
