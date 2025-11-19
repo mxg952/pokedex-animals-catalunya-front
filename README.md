@@ -2,6 +2,8 @@
 
 A modern Next.js application for cataloging and discovering native animals of Catalonia, inspired by the Pokédex concept. Users can unlock animals by uploading photos, track their progress, and compete with friends to complete their collection.
 
+![alt text](image-1.png)
+
 ## 🌟 Features
 
 ### User Features
@@ -15,11 +17,17 @@ A modern Next.js application for cataloging and discovering native animals of Ca
 - **Monthly Visibility**: Track which months animals can be spotted
 - **Location Information**: Interactive maps showing where to find each animal
 
+![alt text](image-2.png)
+
+
 ### Admin Features
 - **User Management**: View all registered users and their statistics
 - **Animal Creation**: Add new animals to the catalog with detailed information
 - **Statistics Dashboard**: Monitor platform usage and engagement
 
+![alt text](image-3.png)
+
+![alt text](image-4.png)
 ## 🛠️ Tech Stack
 
 - **Framework**: Next.js 16 (App Router)
