@@ -218,13 +218,55 @@ npm run build
 npm run start
 ```
 
-## 👥 Contributing
+## 📄 License
 
-Contact the repository for contribution guidelines.
+This project is licensed under the **Educational License** - see the [LICENSE](LICENSE) file for details.
 
-For issues related to:
-- **Frontend**: Create an issue in this repository
-- **Backend**: Visit the [backend repository](https://github.com/mxg952/pokedex-animals-catalunya.git)
+> **Note**: This project is developed for educational purposes as part of academic coursework. Commercial use requires permission.
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. **Fork the repository**
+2. **Create a feature branch**
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
+3. **Commit your changes**
+   ```bash
+   git commit -m 'Add amazing feature'
+   ```
+4. **Push to the branch**
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+5. **Open a Pull Request**
+
+### Development Guidelines
+- Follow Java coding conventions
+- Write tests for new functionality
+- Update documentation accordingly
+- Use meaningful commit messages
+
+---
+
+## 🌟 Future Enhancements
+
+### Planned Features
+- 🎯 Machine learning photo validation
+- 📱 Mobile app development
+- 🗺 Interactive map integration
+- 👥 Social features and sharing
+- 🏆 Achievement system and badges
+
+### Technical Improvements
+- 🔍 Advanced search and filtering
+- 📊 Enhanced analytics dashboard
+- 🔄 Real-time notifications
+- ☁️ Cloud storage integration
 
 ## 🙏 Acknowledgments
 
